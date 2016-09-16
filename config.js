@@ -1,6 +1,8 @@
 /*
  * config.js
- * - used to store all the global configurations
+ * - used to store all the sensitive global configurations
+ * - and so would be NORMALLY BE EXCLUDED from github, or bitbucket etc
+ *   however for demonstration purposes this particular file is being included here
  */
 
 
