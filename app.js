@@ -1,5 +1,5 @@
 /*
- * server.js
+ * app.js
  * - the main express based node application file
  * - will be used to setup dependencies
  * - and configure application, including the database
@@ -34,19 +34,22 @@ var jwt = require('jsonwebtoken');
 var config = require('./config');
 
 // import the user model
-var User = require('./app/models/user');
+var User = require('./models/user');
+
+// import the api routes
+var index = require('./routes/index');
+var api = require('./routes/api');
 
 
 //
 // configure application, including database
 //
 
-// set port to default value or to any environment value
-// and also connect to the releveant db url
-var port = process.env.PORT || 8080;
 mongoose.connect(config.database);
 
-// make jwt signature secret globally available
+// make following values globally available
+// set port to default value or to any environment value
+app.set('port', process.env.PORT || 8080);
 app.set('superSecret', config.secret);
 
 // setup url-encoded and generic json parser
@@ -61,14 +64,20 @@ app.use(morgan('dev'));
 // setup routes
 //
 
-app.get('/', function (req, res) {
-    res.send('Hello! The API is at http://localhost:' + port + '/api');
-});
+// basic internal helper routes
+app.use('/', index);
+
+// api routes default to prefix '/api'
+// app.use('/api', api);
+
 
 
 //
 // start the server
 //
 
-app.listen(port);
-console.log('listenting to port: ' + port);
+app.listen(app.get('port'));
+console.log('listenting to port: ' + app.get('port'));
+
+
+module.exports = app;
