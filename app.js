@@ -33,9 +33,6 @@ var jwt = require('jsonwebtoken');
 // import global configuration properties
 var config = require('./config');
 
-// import the user model
-var User = require('./models/user');
-
 // import the default and api routes
 var index = require('./routes/index');
 var api = require('./routes/api');
@@ -60,7 +57,7 @@ app.use(logger('dev'));
 //
 
 app.use('/', index);
-// app.use('/api', api);
+app.use('/api', api);
 
 
 app.listen(app.get('port'));
