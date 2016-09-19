@@ -9,12 +9,14 @@
 var express = require('express');
 var router = express.Router();
 var app = require('../app');
+var User = require('./../models/user');
 
 
 // default route
 router.get('/', function (req, res) {
     res.send('Hello! The API is at http://localhost:' + app.get('port') + '/api');
 });
+
 
 // route to create user
 router.get('/setup', function (req, res) {
