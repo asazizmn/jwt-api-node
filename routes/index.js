@@ -39,9 +39,7 @@ router.get('/setup', function (req, res) {
 
     // save the user
     user.save(function (err) {
-        if (err) {
-            throw err;
-        }
+        if (err) throw err;
 
         console.log('user saved successfully');
         res.json({
