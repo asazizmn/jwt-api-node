@@ -2,8 +2,7 @@
  * app.js
  * - the main express based node application file
  * - will be used to setup dependencies
- * - and configure application, including the database
- * - and define basic routes, both protected and unprotected
+ * - and configure the application, including the database and routes
  */
 
 
@@ -13,7 +12,7 @@
 
 // popular node web backend framework
 var express = require('express');
-var app = module.exports = express();
+var app = express();
 
 // parsing middleware
 // allows you to parse incoming request bodies
@@ -26,16 +25,8 @@ var logger = require('morgan');
 // and object modelling for node
 var mongoose = require('mongoose');
 
-// node implementation of JSON Web Tokens
-// allows us to create and then verify them
-var jwt = require('jsonwebtoken');
-
 // import global configuration properties
 var config = require('./config');
-
-// import the default and api routes
-var index = require('./routes/index');
-var api = require('./routes/api');
 
 
 //
@@ -45,20 +36,22 @@ var api = require('./routes/api');
 mongoose.connect(config.database);
 
 app.set('port', process.env.PORT || 8080);
-app.set('superSecret', config.secret);
+app.set('signatureKey', config.secret);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(logger('dev'));
 
+// please note this has to happen before routes setup
+module.exports = app;
+
+app.use('/', require('./routes/index'));
+app.use('/api', require('./routes/api'));
+
 
 //
-// setup routes
+// start listening to the port
 //
-
-app.use('/', index);
-app.use('/api', api);
-
 
 app.listen(app.get('port'));
 console.log('listenting to port: ' + app.get('port'));
