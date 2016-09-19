@@ -19,34 +19,18 @@ var jwt = require('jsonwebtoken');
 // routing
 //
 
-// default
-router.get('/', function (req, res) {
-    res.json({
-        message: "Welcome to the API!"
-    });
-});
-
-
-// return all users
-router.get('/users', function (req, res) {
-    User.find(function (err, users) {
-        res.json(users);
-    });
-});
-
-
-// TODO: route middleware to verify a token
-
-// POST route to authenticate a user
+// UNPROTECTED: POST route to authenticate a user
 router.post('/authenticate', function (req, res) {
 
+    // username
     var conditions = {
         name: req.body.name
     };
 
+    // function to execute once username is found
     var callback = function (err, user) {
         var token, expire = {
-            expiresIn: 60*60*24
+            expiresIn: 60 * 60 * 24
         };
 
         if (err) throw err;
@@ -82,11 +66,68 @@ router.post('/authenticate', function (req, res) {
 
     // use mongoose to find existing user and return token
     User.findOne(conditions, callback);
-
-
-
 });
 
+
+// route middleware to verify token for routes below
+// the secret used here must match the one when creating the token
+// otherwise send 403 forbidden HTTP response code
+router.use(function (req, res, next) {
+
+    // although recommended way of sending token is within http header
+    // for flexibility, check all possible locations for token (GET, POST, & HTTP header)
+    var token = req.query.token || req.body.token || req.headers['x-access-token'];
+
+    // function to decides what to do in terms of failure or success in token verification
+    var callback = function (err, decoded) {
+        
+        // failure
+        if (err) {
+            return res.json({
+                success: false,
+                message: 'Failed to authenticate token.'
+            });
+
+        // success
+        } else {
+
+            // pass the decoded information to the protected routes below
+            // remember that jwt's contain information in payload claims i.e. registered, public, private
+            // information like token expiry date, username, etc
+            req.decoded = decoded;
+            next();
+        }
+    };
+
+
+    // ensure token provided, then verify it
+    if (token) {
+        jwt.verify(token, app.get('signatureKey'), callback);
+
+    // in absence of token return error
+    } else {
+        return res.status(403).send({
+            success: false,
+            message: 'Unauthorised access. No token provided.'
+        });
+    }
+});
+
+
+// PROTECTED: default
+router.get('/', function (req, res) {
+    res.json({
+        message: "Welcome to the API!"
+    });
+});
+
+
+// PROTECTED: return all users
+router.get('/users', function (req, res) {
+    User.find(function (err, users) {
+        res.json(users);
+    });
+});
 
 
 module.exports = router;
