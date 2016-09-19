@@ -5,12 +5,19 @@
  */
 
 
-// prepare router middleware
+//
+// dependencies
+//
+
 var express = require('express');
 var router = express.Router();
 var app = require('../app');
 var User = require('./../models/user');
 
+
+//
+// routing
+//
 
 // default route
 router.get('/', function (req, res) {
