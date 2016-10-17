@@ -19,7 +19,7 @@ var jwt = require('jsonwebtoken');
 // routing
 //
 
-// UNPROTECTED: POST route to authenticate a user
+// UNPROTECTED: POST route to authenticate a user (create token)
 router.post('/authenticate', function (req, res) {
 
     // username
